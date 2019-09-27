@@ -2,3 +2,4 @@ flask
 flask-restful
 flask_migrate
 gunicorn
+psycopg2
