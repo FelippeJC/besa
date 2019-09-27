@@ -1,5 +1,5 @@
 import os
-from app.app import app
+from project.app import app
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
