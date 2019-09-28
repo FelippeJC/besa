@@ -1,5 +1,7 @@
 flask
 flask-restful
 flask_migrate
+folium
+pandas
 gunicorn
 psycopg2
