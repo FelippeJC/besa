@@ -7,6 +7,10 @@ from flask_restful import Api
 from config import Config, DevelopmentConfig, TestingConfig
 from .database import db
 import folium
+from .opendata.objects import (get_barcelona_map, get_bicycle_map_layer,
+                               get_mercats_i_fires_al_carrer_map_layer,
+                               get_public_wifi_map_layer,
+                               )
 
 ##########################################################################
 # Configurations
@@ -53,7 +57,7 @@ def not_found(error):
 
 @app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template('index.html', data=[20, 40, 40])
 
 
 @app.route("/city-initiatives")
@@ -63,41 +67,82 @@ def city_initiatives():
 
 @app.route("/city-amenities")
 def city_amenities():
-    m = folium.Map(location=[45.5236, -122.6750],
-                   tiles='Stamen Toner',
-                   zoom_start=13,
-                   )
-
-    folium.Circle(radius=100,
-                  location=[45.5244, -122.6699],
-                  popup='The Waterfront',
-                  color='crimson',
-                  fill=True,
-                  ).add_to(m)
-
-    folium.CircleMarker(location=[45.5215, -122.6261],
-                        radius=50,
-                        popup='Laurelhurst Park',
-                        color='#3186cc',
-                        fill=True,
-                        fill_color='#3186cc'
-                        ).add_to(m)
-    legend_html = '''
-                <div style="position: fixed; background-color: rgba(255,255,255,0.85);
-                            bottom: 50px; left: 50px; width: 100px; height: 90px;
-                            border:2px solid grey; z-index:9999; font-size:14px;">
-                    &nbsp; Cool Legend <br>
-                    &nbsp; <i class="fa fa-map-marker fa-2x" style="color:green"></i> &nbsp; East <br>
-                    &nbsp; <i class="fa fa-map-marker fa-2x" style="color:red"></i> &nbsp; West
-                </div>
-                '''
-    m.get_root().html.add_child(folium.Element(legend_html))
-    return render_template('city_amenities.html', folium_map=m._repr_html_())
+    bcn_map = get_barcelona_map()
+    bcn_map.add_child(get_mercats_i_fires_al_carrer_map_layer())
+    wifi_map_layer = get_public_wifi_map_layer()
+    if wifi_map_layer is not None:
+        bcn_map.add_child(wifi_map_layer)
+    folium.LayerControl().add_to(bcn_map)
+    return render_template('city_amenities.html', folium_map=bcn_map._repr_html_())
 
 
 @app.route("/about")
 def about():
     return render_template('about.html')
+
+
+###  ENVIRONMENT  ###
+
+
+@app.route("/city-trees")
+def city_trees():
+    return render_template('city_trees.html')
+
+
+@app.route("/green-spaces")
+def green_spaces():
+    return render_template('green_spaces.html')
+
+
+@app.route("/waste-management")
+def waste_management():
+    return render_template('waste_management.html')
+
+
+###  MOBILITY  ###
+
+
+@app.route("/city-flow")
+def city_flow():
+    return render_template('city_flow.html')
+
+
+@app.route("/public-transportation")
+def public_transportation():
+    return render_template('public_transportation.html')
+
+
+@app.route("/bicycle")
+def bicycle():
+    bcn_map = get_barcelona_map()
+    bicycle_map_layer = get_bicycle_map_layer()
+    if bicycle_map_layer is not None:
+        bcn_map.add_child(bicycle_map_layer)
+    folium.LayerControl().add_to(bcn_map)
+    return render_template('bicycle.html', folium_map=bcn_map._repr_html_())
+
+
+@app.route("/car")
+def car():
+    return render_template('car.html')
+
+
+@app.route("/traffic-incidents")
+def traffic_incidents():
+    return render_template('traffic_incidents.html')
+
+
+###  POPULATION  ###
+
+
+@app.route("/demography")
+def demography():
+    return render_template('demography.html')
+
+
+@app.route("/society-and-welfare")
+def society_and_welfare():
+    return render_template('society_and_welfare.html')
 
 
 @app.route("/blank")

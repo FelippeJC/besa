@@ -67,9 +67,9 @@
             <a class="collapse-item" href="{{ url_for('blank') }}">Maps</a>
             <div class="collapse-divider"></div>
             <h6 class="collapse-header">Infrastructure:</h6>
-            <a class="collapse-item" href="{{ url_for('blank') }}">City trees</a>
-            <a class="collapse-item" href="{{ url_for('blank') }}">Green spaces</a>
-            <a class="collapse-item" href="{{ url_for('blank') }}">Waste management</a>
+            <a class="collapse-item" href="{{ url_for('city_trees') }}">City trees</a>
+            <a class="collapse-item" href="{{ url_for('green_spaces') }}">Green spaces</a>
+            <a class="collapse-item" href="{{ url_for('waste_management') }}">Waste management</a>
           </div>
         </div>
       </li>
@@ -82,13 +82,13 @@
         </a>
         <div id="collapseMobility" class="collapse" aria-labelledby="headingMobility" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="{{ url_for('blank') }}">City flow</a>
-            <a class="collapse-item" href="{{ url_for('blank') }}">Public transportation</a>
-            <a class="collapse-item" href="{{ url_for('blank') }}">Cycling</a>
-            <a class="collapse-item" href="{{ url_for('blank') }}">Car</a>
+            <a class="collapse-item" href="{{ url_for('city_flow') }}">City flow</a>
+            <a class="collapse-item" href="{{ url_for('public_transportation') }}">Public transportation</a>
+            <a class="collapse-item" href="{{ url_for('bicycle') }}">Bicycle</a>
+            <a class="collapse-item" href="{{ url_for('car') }}">Car</a>
             <div class="collapse-divider"></div>
             <h6 class="collapse-header">Safety:</h6>
-            <a class="collapse-item" href="{{ url_for('blank') }}">Traffic incidents</a>
+            <a class="collapse-item" href="{{ url_for('traffic_incidents') }}">Traffic incidents</a>
           </div>
         </div>
       </li>
@@ -101,8 +101,8 @@
         </a>
         <div id="collapsePopuation" class="collapse" aria-labelledby="headingPopuation" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="{{ url_for('blank') }}">Demography</a>
-            <a class="collapse-item" href="{{ url_for('blank') }}">Society and Welfare</a>
+            <a class="collapse-item" href="{{ url_for('demography') }}">Demography</a>
+            <a class="collapse-item" href="{{ url_for('society_and_welfare') }}">Society and Welfare</a>
           </div>
         </div>
       </li>
