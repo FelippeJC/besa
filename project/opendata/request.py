@@ -10,13 +10,26 @@ Variables:
     OPENDATA_URL {str} -- is the base url where the Open Data Barcelona is hosted
 """
 
-__all__ = ["current_package_list_with_resources", "package_search", "resource_show",  # Catalogue management APIs
+__all__ = ["raw_data",
+           "current_package_list_with_resources", "package_search", "resource_show",  # Catalogue management APIs
            "datastore_search",  # Query APIs on CSV resources
            ]
 
 import requests
 
 OPENDATA_URL = "https://opendata-ajuntament.barcelona.cat/data/api/action/"
+
+
+def raw_data(url):
+    """return the raw response of an url request on OpenData API
+    Usefull when trying to get geojson file
+    """
+    try:
+        data = requests.get(url)
+        return data.json()
+    except (requests.exceptions.RequestException, ValueError) as e:
+        print(e)
+    return
 
 
 def _request_json(url):
