@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import folium
 import pandas as pd
 from pandas.io.json import json_normalize
@@ -43,7 +44,7 @@ def get_bicycle_map_layer():
 def get_mercats_i_fires_al_carrer_map_layer():
     map_layer = folium.FeatureGroup("Mercats i fires al carrer")
     try:
-        data = Data("resource_id={resource_id}".format(resource_id=urls.RESOURCE_ID["mercats_i_fires_al_carrer"]))
+        data = Data("resource_id={resource_id}&limit=100000".format(resource_id=urls.RESOURCE_ID["mercats_i_fires_al_carrer"]))
         popup_str = ("<h4>{name}</h4>"
                      "<address>"
                      "  {street_name}<br>"
@@ -69,7 +70,7 @@ def get_mercats_i_fires_al_carrer_map_layer():
 def get_public_wifi_map_layer():
     map_layer = folium.FeatureGroup("Public WiFi")
     try:
-        data = Data("resource_id={resource_id}".format(resource_id=urls.RESOURCE_ID["public_wifi"]))
+        data = Data("resource_id={resource_id}&limit=100000".format(resource_id=urls.RESOURCE_ID["public_wifi"]))
         popup_str = ("<h4>{name}</h4>"
                      "<address>"
                      "  {street_name}<br>"
@@ -77,9 +78,41 @@ def get_public_wifi_map_layer():
                      "  {district}<br>"
                      "</address>")
         for __, row in data.df.iterrows():
-            folium.Marker((row['LATITUD'], row['LONGITUD']),
-                          icon=folium.Icon(color="gray", icon='wifi', prefix='fa'),
+            folium.Circle((row['LATITUD'], row['LONGITUD']), 40,
                           tooltip=row['NOM_CAPA'],
+                          popup=popup_str.format(name=row['EQUIPAMENT'] or "",
+                                                 street_name=row['ADRECA'] or "",
+                                                 neighborhood=row['NOM_BARRI'] or "",
+                                                 district=row['NOM_DISTRICTE'] or "",
+                                                 ),
+                          color='#3186cc',
+                          fill=True,
+                          fill_color='#3186cc').add_to(map_layer)
+    except ValueError as e:
+        print(e)
+    return map_layer
+
+
+def get_bus_stations_map_layer():
+    map_layer = folium.FeatureGroup("Bus Stations")
+    try:
+        data = Data("resource_id={resource_id}&limit=4000".format(resource_id=urls.RESOURCE_ID["bus_stations"]))
+        popup_str = ("<h4>{name}</h4>"
+                     "<address>"
+                     "  {street_name}<br>"
+                     "  {neighborhood}<br>"
+                     "  {district}<br>"
+                     "</address>")
+        for __, row in data.df.iterrows():
+            bus_type = row['NOM_CAPA']
+            color = "green"
+            if "nocturns" in bus_type:
+                color = "gray"
+            if "diürns" in bus_type:
+                color = "blue"
+            folium.Marker((row['LATITUD'], row['LONGITUD']),
+                          icon=folium.Icon(color=color, icon='bus', prefix='fa'),
+                          tooltip=bus_type,
                           popup=popup_str.format(name=row['EQUIPAMENT'] or "",
                                                  street_name=row['ADRECA'] or "",
                                                  neighborhood=row['NOM_BARRI'] or "",

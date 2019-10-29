@@ -6,10 +6,14 @@ from flask_migrate import Migrate
 from flask_restful import Api
 from config import Config, DevelopmentConfig, TestingConfig
 from .database import db
+from datetime import datetime
+import random
 import folium
 from .opendata.objects import (get_barcelona_map, get_bicycle_map_layer,
                                get_mercats_i_fires_al_carrer_map_layer,
                                get_public_wifi_map_layer,
+                               get_bus_stations_map_layer,
+                               Data,
                                )
 
 ##########################################################################
@@ -83,6 +87,66 @@ def about():
 
 ###  ENVIRONMENT  ###
 
+@app.route("/temperature")
+def temperature():
+    temp = Data("resource_id=0e3b6840-7dff-4731-a556-44fac28a7873&limit=400")
+    temp.df = temp.df.astype(float)
+    temp.df.astype({'Any': 'int32'}).dtypes
+    temp.df.drop('_id', axis=1, inplace=True)
+    temp.df.set_index('Any', inplace=True)
+    temp.df.rename(columns={'Temp_Mitjana_Gener': 'January',
+                            'Temp_Mitjana_Febrer': 'February',
+                            'Temp_Mitjana_Marc': 'March',
+                            'Temp_Mitjana_Abril': 'April',
+                            'Temp_Mitjana_Maig': 'May',
+                            'Temp_Mitjana_Juny': 'June',
+                            'Temp_Mitjana_Juliol': 'July',
+                            'Temp_Mitjana_Agost': 'August',
+                            'Temp_Mitjana_Setembre': 'September',
+                            'Temp_Mitjana_Octubre': 'October',
+                            'Temp_Mitjana_Novembre': 'November',
+                            'Temp_Mitjana_Desembre': 'December'},
+                   inplace=True)
+    dataset = list()
+    for (columnName, columnData) in temp.df.iteritems():
+        color_r, color_g, color_b = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        dataset.append({"label": columnName,
+                        "lineTension": 0.3,
+                        "backgroundColor": "rgba({r}, {g}, {b}, 0.05)".format(r=color_r, g=color_g, b=color_b),
+                        "borderColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
+                        "pointRadius": 2,
+                        "pointBackgroundColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
+                        "pointBorderColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
+                        "pointHoverRadius": 2,
+                        "pointHoverBackgroundColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
+                        "pointHoverBorderColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
+                        "pointHitRadius": 5,
+                        "pointBorderWidth": 2,
+                        "data": list(columnData)
+                        })
+    # radar graph
+    average_temperatures = dict(temp.df.mean())
+    average_temperatures = sorted(average_temperatures.items(), key=lambda kv: (datetime.strptime(kv[0], '%B'), kv[1]))
+    average_temperatures_labels = list()
+    average_temperatures_data = list()
+    average_temperatures_data_colors = list()
+    for label, value in average_temperatures:
+        average_temperatures_data_colors.append("#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)]))
+        average_temperatures_labels.append(label)
+        average_temperatures_data.append(value)
+    radar_graph_data = {"labels": average_temperatures_labels,
+                        "datasets": [{
+                            "data": average_temperatures_data,
+                            "backgroundColor": average_temperatures_data_colors,
+                            "hoverBackgroundColor": average_temperatures_data_colors,
+                            "hoverBorderColor": "rgba(234, 236, 244, 0.4)",
+                        }],
+                        }
+    return render_template('temperature.html',
+                           label=list(temp.df.index),
+                           data=dataset,
+                           radar_graph_data=radar_graph_data)
+
 
 @app.route("/city-trees")
 def city_trees():
@@ -109,7 +173,12 @@ def city_flow():
 
 @app.route("/public-transportation")
 def public_transportation():
-    return render_template('public_transportation.html')
+    bcn_map = get_barcelona_map()
+    bus_map_layer = get_bus_stations_map_layer()
+    if bus_map_layer is not None:
+        bcn_map.add_child(bus_map_layer)
+    folium.LayerControl().add_to(bcn_map)
+    return render_template('public_transportation.html', folium_map=bcn_map._repr_html_())
 
 
 @app.route("/bicycle")
