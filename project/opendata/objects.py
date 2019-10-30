@@ -96,7 +96,7 @@ def get_public_wifi_map_layer():
 def get_bus_stations_map_layer():
     map_layer = folium.FeatureGroup("Bus Stations")
     try:
-        data = Data("resource_id={resource_id}&limit=4000".format(resource_id=urls.RESOURCE_ID["bus_stations"]))
+        data = Data("resource_id={resource_id}&limit=1000".format(resource_id=urls.RESOURCE_ID["bus_stations"]))
         popup_str = ("<h4>{name}</h4>"
                      "<address>"
                      "  {street_name}<br>"
