@@ -125,6 +125,8 @@ def temperature():
                         "pointBorderWidth": 1,
                         "data": list(columnData)
                         })
+    year_average = dict(temp.df.mean(axis=1))
+    yearMaxValue = max(year_average.items(), key=lambda x: x[1])
     average_temperatures = dict(temp.df.mean())
     itemMinValue = min(average_temperatures.items(), key=lambda x: x[1])
     itemMaxValue = max(average_temperatures.items(), key=lambda x: x[1])
@@ -152,7 +154,8 @@ def temperature():
                            radar_graph_data=radar_graph_data,
                            itemMinValue="{month} ({temp:.2f}  °C)".format(month=itemMinValue[0], temp=itemMinValue[1]),
                            itemMaxValue="{month} ({temp:.2f}  °C)".format(month=itemMaxValue[0], temp=itemMaxValue[1]),
-                           amount_of_data=len(labels))
+                           amount_of_data=len(labels),
+                           yearMaxValue="{year} with {temp:.2f} °C average".format(year=int(yearMaxValue[0]), temp=yearMaxValue[1]),)
 
 
 @app.route("/precipitation")

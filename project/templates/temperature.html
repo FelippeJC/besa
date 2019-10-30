@@ -12,7 +12,7 @@
         <div class="card-body">
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Lowest (Monthly average)</div>
+              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Lowest (Historical average)</div>
               <div class="h5 mb-0 font-weight-bold text-gray-800">{{ itemMinValue }}</div>
             </div>
             <div class="col-auto">
@@ -29,7 +29,7 @@
         <div class="card-body">
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Highest (Monthly average)</div>
+              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Highest (Historical average)</div>
               <div class="h5 mb-0 font-weight-bold text-gray-800">{{ itemMaxValue }}</div>
             </div>
             <div class="col-auto">
@@ -67,11 +67,11 @@
         <div class="card-body">
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending Requests</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Highest anual average</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ yearMaxValue }}</div>
             </div>
             <div class="col-auto">
-              <i class="fas fa-comments fa-2x text-gray-300"></i>
+              <i class="fas fa-chart-line"></i>
             </div>
           </div>
         </div>
@@ -229,7 +229,7 @@
     var ctx = document.getElementById("RadarChart");
     var RadarChart = new Chart(ctx, {
       type: 'radar',
-      data: {{ radar_graph_data | tojson }},
+      data: label= {{ radar_graph_data | tojson }},
       options: {
         maintainAspectRatio: false,
         plugins: {
