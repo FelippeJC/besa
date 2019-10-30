@@ -148,6 +148,11 @@ def temperature():
                            radar_graph_data=radar_graph_data)
 
 
+@app.route("/precipitation")
+def precipitation():
+    return render_template('precipitation.html')
+
+
 @app.route("/city-trees")
 def city_trees():
     return render_template('city_trees.html')
@@ -204,14 +209,14 @@ def traffic_incidents():
 ###  POPULATION  ###
 
 
-@app.route("/demography")
-def demography():
-    return render_template('demography.html')
+# @app.route("/demography")
+# def demography():
+#     return render_template('demography.html')
 
 
-@app.route("/society-and-welfare")
-def society_and_welfare():
-    return render_template('society_and_welfare.html')
+# @app.route("/society-and-welfare")
+# def society_and_welfare():
+#     return render_template('society_and_welfare.html')
 
 
 @app.route("/blank")

@@ -68,7 +68,7 @@ def get_mercats_i_fires_al_carrer_map_layer():
 
 
 def get_public_wifi_map_layer():
-    map_layer = folium.FeatureGroup("Public WiFi")
+    map_layer = folium.FeatureGroup("Public WiFi coverage")
     try:
         data = Data("resource_id={resource_id}&limit=100000".format(resource_id=urls.RESOURCE_ID["public_wifi"]))
         popup_str = ("<h4>{name}</h4>"
