@@ -141,10 +141,11 @@ def temperature():
         average_temperatures_data.append(value)
     radar_graph_data = {"labels": average_temperatures_labels,
                         "datasets": [{
+                            "label": "Average temperatures over time",
                             "data": average_temperatures_data,
                             "backgroundColor": average_temperatures_data_colors,
                             "hoverBackgroundColor": average_temperatures_data_colors,
-                            "hoverBorderColor": "rgba(234, 236, 244, 0.4)",
+                            "hoverBorderColor": "rgba(234, 236, 244, 0.1)",
                         }],
                         }
     labels = list(temp.df.index)
@@ -200,12 +201,33 @@ def precipitation():
     itemMinValue = min(average_precipitations.items(), key=lambda x: x[1])
     itemMaxValue = max(average_precipitations.items(), key=lambda x: x[1])
     labels = list(data.df.index)
+    year_average = dict(data.df.mean(axis=1))
+    yearMaxValue = max(year_average.items(), key=lambda x: x[1])
+    # Radar
+    radar_labels = list()
+    radar_values = list()
+    radar_colors = list()
+    for label, value in sorted(year_average.items(), key=lambda x: int(x[0])):
+        radar_labels.append(label)
+        radar_values.append(value)
+        radar_colors.append("#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)]))
+    radar_graph_data = {"labels": radar_labels,
+                        "datasets": [{
+                            "label": "Average yearly precipitation",
+                            "data": radar_values,
+                            "backgroundColor": radar_colors,
+                            "hoverBackgroundColor": radar_colors,
+                            "hoverBorderColor": "rgba(234, 236, 244, 0.1)",
+                        }],
+                        }
     return render_template('precipitation.html',
                            label=labels,
                            data=dataset,
+                           radar_data=radar_graph_data,
                            itemMinValue="{month} ({temp:.2f}  mm)".format(month=itemMinValue[0], temp=itemMinValue[1]),
                            itemMaxValue="{month} ({temp:.2f}  mm)".format(month=itemMaxValue[0], temp=itemMaxValue[1]),
-                           amount_of_data=len(labels))
+                           amount_of_data=len(labels),
+                           yearMaxValue="{year} with {temp:.2f} mm average".format(year=int(yearMaxValue[0]), temp=yearMaxValue[1]))
 
 
 @app.route("/city-trees")
@@ -226,9 +248,9 @@ def waste_management():
 ###  MOBILITY  ###
 
 
-@app.route("/city-flow")
-def city_flow():
-    return render_template('city_flow.html')
+# @app.route("/city-flow")
+# def city_flow():
+#     return render_template('city_flow.html')
 
 
 @app.route("/public-transportation")

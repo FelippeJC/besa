@@ -67,11 +67,11 @@
         <div class="card-body">
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending Requests</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Highest anual average</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ yearMaxValue }}</div>
             </div>
             <div class="col-auto">
-              <i class="fas fa-comments fa-2x text-gray-300"></i>
+              <i class="fas fa-chart-line"></i>
             </div>
           </div>
         </div>
@@ -97,8 +97,7 @@
         <!-- Card Body -->
         <div class="card-body">
           <div class="chart-pie pt-4 pb-2">
-            <p>FOO</p>
-            <!-- <canvas id="RadarChart"></canvas> -->
+            <canvas id="RadarChart"></canvas>
           </div>
         </div>
       </div>
@@ -216,6 +215,40 @@
           }
         }
       }
+    });
+  </script>
+
+  <!-- Radar Chart script -->
+  <script>
+    // Set new default font family and font color to mimic Bootstrap's default styling
+    Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+    Chart.defaults.global.defaultFontColor = '#858796';
+
+    // Pie Chart Example
+    var ctx = document.getElementById("RadarChart");
+    var RadarChart = new Chart(ctx, {
+      type: 'radar',
+      data: {{ radar_data | tojson }},
+      options: {
+        maintainAspectRatio: false,
+        plugins: {
+          filler: {
+            propagate: false
+          },
+          'samples-filler-analyser': {
+            target: 'chart-analyser'
+          }
+        },
+        scale: {
+          angleLines: {
+            display: false
+          },
+          ticks: {
+            suggestedMin: -10,
+            suggestedMax: 40
+          }
+        }
+      },
     });
   </script>
 

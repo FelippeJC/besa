@@ -229,7 +229,7 @@
     var ctx = document.getElementById("RadarChart");
     var RadarChart = new Chart(ctx, {
       type: 'radar',
-      data: label= {{ radar_graph_data | tojson }},
+      data: {{ radar_graph_data | tojson }},
       options: {
         maintainAspectRatio: false,
         plugins: {
