@@ -89,145 +89,151 @@ def about():
 
 @app.route("/temperature")
 def temperature():
-    temp = Data("resource_id=0e3b6840-7dff-4731-a556-44fac28a7873&limit=400")
-    temp.df = temp.df.astype(float)
-    temp.df.astype({'Any': 'int32'}).dtypes
-    temp.df.drop('_id', axis=1, inplace=True)
-    temp.df.set_index('Any', inplace=True)
-    temp.df.rename(columns={'Temp_Mitjana_Gener': 'January',
-                            'Temp_Mitjana_Febrer': 'February',
-                            'Temp_Mitjana_Marc': 'March',
-                            'Temp_Mitjana_Abril': 'April',
-                            'Temp_Mitjana_Maig': 'May',
-                            'Temp_Mitjana_Juny': 'June',
-                            'Temp_Mitjana_Juliol': 'July',
-                            'Temp_Mitjana_Agost': 'August',
-                            'Temp_Mitjana_Setembre': 'September',
-                            'Temp_Mitjana_Octubre': 'October',
-                            'Temp_Mitjana_Novembre': 'November',
-                            'Temp_Mitjana_Desembre': 'December'},
-                   inplace=True)
-    dataset = list()
-    for (columnName, columnData) in temp.df.iteritems():
-        color_r, color_g, color_b = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-        dataset.append({"label": columnName,
-                        "lineTension": 0.3,
-                        "backgroundColor": "rgba({r}, {g}, {b}, 0.05)".format(r=color_r, g=color_g, b=color_b),
-                        "borderColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
-                        "borderWidth": 1,
-                        "pointRadius": 1,
-                        "pointBackgroundColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
-                        "pointBorderColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
-                        "pointHoverRadius": 1,
-                        "pointHoverBackgroundColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
-                        "pointHoverBorderColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
-                        "pointHitRadius": 2,
-                        "pointBorderWidth": 1,
-                        "data": list(columnData)
-                        })
-    year_average = dict(temp.df.mean(axis=1))
-    yearMaxValue = max(year_average.items(), key=lambda x: x[1])
-    average_temperatures = dict(temp.df.mean())
-    itemMinValue = min(average_temperatures.items(), key=lambda x: x[1])
-    itemMaxValue = max(average_temperatures.items(), key=lambda x: x[1])
-    # radar graph
-    average_temperatures = sorted(average_temperatures.items(), key=lambda kv: (datetime.strptime(kv[0], '%B'), kv[1]))
-    average_temperatures_labels = list()
-    average_temperatures_data = list()
-    average_temperatures_data_colors = list()
-    for label, value in average_temperatures:
-        average_temperatures_data_colors.append("#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)]))
-        average_temperatures_labels.append(label)
-        average_temperatures_data.append(value)
-    radar_graph_data = {"labels": average_temperatures_labels,
-                        "datasets": [{
-                            "label": "Average temperatures over time",
-                            "data": average_temperatures_data,
-                            "backgroundColor": average_temperatures_data_colors,
-                            "hoverBackgroundColor": average_temperatures_data_colors,
-                            "hoverBorderColor": "rgba(234, 236, 244, 0.1)",
-                        }],
-                        }
-    labels = list(temp.df.index)
-    return render_template('temperature.html',
-                           label=labels,
-                           data=dataset,
-                           radar_graph_data=radar_graph_data,
-                           itemMinValue="{month} ({temp:.2f}  °C)".format(month=itemMinValue[0], temp=itemMinValue[1]),
-                           itemMaxValue="{month} ({temp:.2f}  °C)".format(month=itemMaxValue[0], temp=itemMaxValue[1]),
-                           amount_of_data=len(labels),
-                           yearMaxValue="{year} with {temp:.2f} °C average".format(year=int(yearMaxValue[0]), temp=yearMaxValue[1]),)
+    try:
+        temp = Data("resource_id=0e3b6840-7dff-4731-a556-44fac28a7873&limit=400")
+        temp.df = temp.df.astype(float)
+        temp.df.astype({'Any': 'int32'}).dtypes
+        temp.df.drop('_id', axis=1, inplace=True)
+        temp.df.set_index('Any', inplace=True)
+        temp.df.rename(columns={'Temp_Mitjana_Gener': 'January',
+                                'Temp_Mitjana_Febrer': 'February',
+                                'Temp_Mitjana_Marc': 'March',
+                                'Temp_Mitjana_Abril': 'April',
+                                'Temp_Mitjana_Maig': 'May',
+                                'Temp_Mitjana_Juny': 'June',
+                                'Temp_Mitjana_Juliol': 'July',
+                                'Temp_Mitjana_Agost': 'August',
+                                'Temp_Mitjana_Setembre': 'September',
+                                'Temp_Mitjana_Octubre': 'October',
+                                'Temp_Mitjana_Novembre': 'November',
+                                'Temp_Mitjana_Desembre': 'December'},
+                       inplace=True)
+        dataset = list()
+        for (columnName, columnData) in temp.df.iteritems():
+            color_r, color_g, color_b = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+            dataset.append({"label": columnName,
+                            "lineTension": 0.3,
+                            "backgroundColor": "rgba({r}, {g}, {b}, 0.05)".format(r=color_r, g=color_g, b=color_b),
+                            "borderColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
+                            "borderWidth": 1,
+                            "pointRadius": 1,
+                            "pointBackgroundColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
+                            "pointBorderColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
+                            "pointHoverRadius": 1,
+                            "pointHoverBackgroundColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
+                            "pointHoverBorderColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
+                            "pointHitRadius": 2,
+                            "pointBorderWidth": 1,
+                            "data": list(columnData)
+                            })
+        year_average = dict(temp.df.mean(axis=1))
+        yearMaxValue = max(year_average.items(), key=lambda x: x[1])
+        average_temperatures = dict(temp.df.mean())
+        itemMinValue = min(average_temperatures.items(), key=lambda x: x[1])
+        itemMaxValue = max(average_temperatures.items(), key=lambda x: x[1])
+        # radar graph
+        average_temperatures = sorted(average_temperatures.items(), key=lambda kv: (datetime.strptime(kv[0], '%B'), kv[1]))
+        average_temperatures_labels = list()
+        average_temperatures_data = list()
+        average_temperatures_data_colors = list()
+        for label, value in average_temperatures:
+            average_temperatures_data_colors.append("#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)]))
+            average_temperatures_labels.append(label)
+            average_temperatures_data.append(value)
+        radar_graph_data = {"labels": average_temperatures_labels,
+                            "datasets": [{
+                                "label": "Average temperatures over time",
+                                "data": average_temperatures_data,
+                                "backgroundColor": average_temperatures_data_colors,
+                                "hoverBackgroundColor": average_temperatures_data_colors,
+                                "hoverBorderColor": "rgba(234, 236, 244, 0.1)",
+                            }],
+                            }
+        labels = list(temp.df.index)
+        return render_template('temperature.html',
+                               label=labels,
+                               data=dataset,
+                               radar_graph_data=radar_graph_data,
+                               itemMinValue="{month} ({temp:.2f}  °C)".format(month=itemMinValue[0], temp=itemMinValue[1]),
+                               itemMaxValue="{month} ({temp:.2f}  °C)".format(month=itemMaxValue[0], temp=itemMaxValue[1]),
+                               amount_of_data=len(labels),
+                               yearMaxValue="{year} with {temp:.2f} °C average".format(year=int(yearMaxValue[0]), temp=yearMaxValue[1]),)
+    except:
+        return render_template('blank.html')
 
 
 @app.route("/precipitation")
 def precipitation():
-    data = Data("resource_id=6f1fb778-0767-478b-b332-c64a833d26d2&limit=400")
-    data.df = data.df.astype(float)
-    data.df.astype({'Any': 'int32'}).dtypes
-    data.df.drop('_id', axis=1, inplace=True)
-    data.df.set_index('Any', inplace=True)
-    data.df.rename(columns={'Precip_Acum_Gener': 'January',
-                            'Precip_Acum_Febrer': 'February',
-                            'Precip_Acum_Marc': 'March',
-                            'Precip_Acum_Abril': 'April',
-                            'Precip_Acum_Maig': 'May',
-                            'Precip_Acum_Juny': 'June',
-                            'Precip_Acum_Juliol': 'July',
-                            'Precip_Acum_Agost': 'August',
-                            'Precip_Acum_Setembre': 'September',
-                            'Precip_Acum_Octubre': 'October',
-                            'Precip_Acum_Novembre': 'November',
-                            'Precip_Acum_Desembre': 'December'},
-                   inplace=True)
-    dataset = list()
-    for (columnName, columnData) in data.df.iteritems():
-        color_r, color_g, color_b = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-        dataset.append({"label": columnName,
-                        "lineTension": 0.3,
-                        "backgroundColor": "rgba({r}, {g}, {b}, 0.05)".format(r=color_r, g=color_g, b=color_b),
-                        "borderColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
-                        "borderWidth": 1,
-                        "pointRadius": 1,
-                        "pointBackgroundColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
-                        "pointBorderColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
-                        "pointHoverRadius": 1,
-                        "pointHoverBackgroundColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
-                        "pointHoverBorderColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
-                        "pointHitRadius": 2,
-                        "pointBorderWidth": 1,
-                        "data": list(columnData)
-                        })
-    average_precipitations = dict(data.df.mean())
-    itemMinValue = min(average_precipitations.items(), key=lambda x: x[1])
-    itemMaxValue = max(average_precipitations.items(), key=lambda x: x[1])
-    labels = list(data.df.index)
-    year_average = dict(data.df.mean(axis=1))
-    yearMaxValue = max(year_average.items(), key=lambda x: x[1])
-    # Radar
-    radar_labels = list()
-    radar_values = list()
-    radar_colors = list()
-    for label, value in sorted(year_average.items(), key=lambda x: int(x[0])):
-        radar_labels.append(label)
-        radar_values.append(value)
-        radar_colors.append("#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)]))
-    radar_graph_data = {"labels": radar_labels,
-                        "datasets": [{
-                            "label": "Average yearly precipitation",
-                            "data": radar_values,
-                            "backgroundColor": radar_colors,
-                            "hoverBackgroundColor": radar_colors,
-                            "hoverBorderColor": "rgba(234, 236, 244, 0.1)",
-                        }],
-                        }
-    return render_template('precipitation.html',
-                           label=labels,
-                           data=dataset,
-                           radar_data=radar_graph_data,
-                           itemMinValue="{month} ({temp:.2f}  mm)".format(month=itemMinValue[0], temp=itemMinValue[1]),
-                           itemMaxValue="{month} ({temp:.2f}  mm)".format(month=itemMaxValue[0], temp=itemMaxValue[1]),
-                           amount_of_data=len(labels),
-                           yearMaxValue="{year} with {temp:.2f} mm average".format(year=int(yearMaxValue[0]), temp=yearMaxValue[1]))
+    try:
+        data = Data("resource_id=6f1fb778-0767-478b-b332-c64a833d26d2&limit=400")
+        data.df = data.df.astype(float)
+        data.df.astype({'Any': 'int32'}).dtypes
+        data.df.drop('_id', axis=1, inplace=True)
+        data.df.set_index('Any', inplace=True)
+        data.df.rename(columns={'Precip_Acum_Gener': 'January',
+                                'Precip_Acum_Febrer': 'February',
+                                'Precip_Acum_Marc': 'March',
+                                'Precip_Acum_Abril': 'April',
+                                'Precip_Acum_Maig': 'May',
+                                'Precip_Acum_Juny': 'June',
+                                'Precip_Acum_Juliol': 'July',
+                                'Precip_Acum_Agost': 'August',
+                                'Precip_Acum_Setembre': 'September',
+                                'Precip_Acum_Octubre': 'October',
+                                'Precip_Acum_Novembre': 'November',
+                                'Precip_Acum_Desembre': 'December'},
+                       inplace=True)
+        dataset = list()
+        for (columnName, columnData) in data.df.iteritems():
+            color_r, color_g, color_b = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+            dataset.append({"label": columnName,
+                            "lineTension": 0.3,
+                            "backgroundColor": "rgba({r}, {g}, {b}, 0.05)".format(r=color_r, g=color_g, b=color_b),
+                            "borderColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
+                            "borderWidth": 1,
+                            "pointRadius": 1,
+                            "pointBackgroundColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
+                            "pointBorderColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
+                            "pointHoverRadius": 1,
+                            "pointHoverBackgroundColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
+                            "pointHoverBorderColor": "rgba({r}, {g}, {b}, 1)".format(r=color_r, g=color_g, b=color_b),
+                            "pointHitRadius": 2,
+                            "pointBorderWidth": 1,
+                            "data": list(columnData)
+                            })
+        average_precipitations = dict(data.df.mean())
+        itemMinValue = min(average_precipitations.items(), key=lambda x: x[1])
+        itemMaxValue = max(average_precipitations.items(), key=lambda x: x[1])
+        labels = list(data.df.index)
+        year_average = dict(data.df.mean(axis=1))
+        yearMaxValue = max(year_average.items(), key=lambda x: x[1])
+        # Radar
+        radar_labels = list()
+        radar_values = list()
+        radar_colors = list()
+        for label, value in sorted(year_average.items(), key=lambda x: int(x[0])):
+            radar_labels.append(label)
+            radar_values.append(value)
+            radar_colors.append("#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)]))
+        radar_graph_data = {"labels": radar_labels,
+                            "datasets": [{
+                                "label": "Average yearly precipitation",
+                                "data": radar_values,
+                                "backgroundColor": radar_colors,
+                                "hoverBackgroundColor": radar_colors,
+                                "hoverBorderColor": "rgba(234, 236, 244, 0.1)",
+                            }],
+                            }
+        return render_template('precipitation.html',
+                               label=labels,
+                               data=dataset,
+                               radar_data=radar_graph_data,
+                               itemMinValue="{month} ({temp:.2f}  mm)".format(month=itemMinValue[0], temp=itemMinValue[1]),
+                               itemMaxValue="{month} ({temp:.2f}  mm)".format(month=itemMaxValue[0], temp=itemMaxValue[1]),
+                               amount_of_data=len(labels),
+                               yearMaxValue="{year} with {temp:.2f} mm average".format(year=int(yearMaxValue[0]), temp=yearMaxValue[1]))
+    except:
+        return render_template('blank.html')
 
 
 @app.route("/city-trees")
