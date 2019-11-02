@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, current_app
 from flask_migrate import Migrate
 from flask_restful import Api
 from config import Config, DevelopmentConfig, TestingConfig
@@ -9,6 +9,7 @@ from .database import db
 from datetime import datetime
 import random
 import folium
+import pandas as pd
 from .opendata.objects import (get_barcelona_map, get_bicycle_map_layer,
                                get_mercats_i_fires_al_carrer_map_layer,
                                get_public_wifi_map_layer,
@@ -90,12 +91,15 @@ def about():
 @app.route("/temperature")
 def temperature():
     try:
-        temp = Data("resource_id=0e3b6840-7dff-4731-a556-44fac28a7873&limit=400")
-        temp.df = temp.df.astype(float)
-        temp.df.astype({'Any': 'int32'}).dtypes
-        temp.df.drop('_id', axis=1, inplace=True)
-        temp.df.set_index('Any', inplace=True)
-        temp.df.rename(columns={'Temp_Mitjana_Gener': 'January',
+        # temp = Data("resource_id=0e3b6840-7dff-4731-a556-44fac28a7873&limit=400")
+        # temp_df = temp.df
+        temp_df = pd.read_csv(current_app.open_resource("static/src/temperaturesbarcelonadesde1780.csv"))
+        temp_df = temp_df.astype(float)
+        temp_df.astype({'Any': 'int32'}).dtypes
+        if "_id" in temp_df.columns:
+            temp_df.drop('_id', axis=1, inplace=True)
+        temp_df.set_index('Any', inplace=True)
+        temp_df.rename(columns={'Temp_Mitjana_Gener': 'January',
                                 'Temp_Mitjana_Febrer': 'February',
                                 'Temp_Mitjana_Marc': 'March',
                                 'Temp_Mitjana_Abril': 'April',
@@ -109,7 +113,7 @@ def temperature():
                                 'Temp_Mitjana_Desembre': 'December'},
                        inplace=True)
         dataset = list()
-        for (columnName, columnData) in temp.df.iteritems():
+        for (columnName, columnData) in temp_df.iteritems():
             color_r, color_g, color_b = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
             dataset.append({"label": columnName,
                             "lineTension": 0.3,
@@ -126,9 +130,9 @@ def temperature():
                             "pointBorderWidth": 1,
                             "data": list(columnData)
                             })
-        year_average = dict(temp.df.mean(axis=1))
+        year_average = dict(temp_df.mean(axis=1))
         yearMaxValue = max(year_average.items(), key=lambda x: x[1])
-        average_temperatures = dict(temp.df.mean())
+        average_temperatures = dict(temp_df.mean())
         itemMinValue = min(average_temperatures.items(), key=lambda x: x[1])
         itemMaxValue = max(average_temperatures.items(), key=lambda x: x[1])
         # radar graph
@@ -149,7 +153,7 @@ def temperature():
                                 "hoverBorderColor": "rgba(234, 236, 244, 0.1)",
                             }],
                             }
-        labels = list(temp.df.index)
+        labels = list(temp_df.index)
         return render_template('temperature.html',
                                label=labels,
                                data=dataset,
@@ -165,12 +169,14 @@ def temperature():
 @app.route("/precipitation")
 def precipitation():
     try:
-        data = Data("resource_id=6f1fb778-0767-478b-b332-c64a833d26d2&limit=400")
-        data.df = data.df.astype(float)
-        data.df.astype({'Any': 'int32'}).dtypes
-        data.df.drop('_id', axis=1, inplace=True)
-        data.df.set_index('Any', inplace=True)
-        data.df.rename(columns={'Precip_Acum_Gener': 'January',
+        # data = Data("resource_id=6f1fb778-0767-478b-b332-c64a833d26d2&limit=400")
+        data_df = pd.read_csv(current_app.open_resource("static/src/precipitacionsbarcelonadesde1786.csv"))
+        data_df = data_df.astype(float)
+        data_df.astype({'Any': 'int32'}).dtypes
+        if "_id" in data_df.columns:
+            data_df.drop('_id', axis=1, inplace=True)
+        data_df.set_index('Any', inplace=True)
+        data_df.rename(columns={'Precip_Acum_Gener': 'January',
                                 'Precip_Acum_Febrer': 'February',
                                 'Precip_Acum_Marc': 'March',
                                 'Precip_Acum_Abril': 'April',
@@ -184,7 +190,7 @@ def precipitation():
                                 'Precip_Acum_Desembre': 'December'},
                        inplace=True)
         dataset = list()
-        for (columnName, columnData) in data.df.iteritems():
+        for (columnName, columnData) in data_df.iteritems():
             color_r, color_g, color_b = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
             dataset.append({"label": columnName,
                             "lineTension": 0.3,
@@ -201,11 +207,11 @@ def precipitation():
                             "pointBorderWidth": 1,
                             "data": list(columnData)
                             })
-        average_precipitations = dict(data.df.mean())
+        average_precipitations = dict(data_df.mean())
         itemMinValue = min(average_precipitations.items(), key=lambda x: x[1])
         itemMaxValue = max(average_precipitations.items(), key=lambda x: x[1])
-        labels = list(data.df.index)
-        year_average = dict(data.df.mean(axis=1))
+        labels = list(data_df.index)
+        year_average = dict(data_df.mean(axis=1))
         yearMaxValue = max(year_average.items(), key=lambda x: x[1])
         # Radar
         radar_labels = list()

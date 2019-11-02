@@ -16,6 +16,7 @@ __all__ = ["raw_data",
            ]
 
 import requests
+import json
 
 OPENDATA_URL = "https://opendata-ajuntament.barcelona.cat/data/api/action/"
 
@@ -25,9 +26,9 @@ def raw_data(url):
     Usefull when trying to get geojson file
     """
     try:
-        data = requests.get(url)
+        data = requests.get(url, timeout=5)
         return data.json()
-    except (requests.exceptions.RequestException, ValueError) as e:
+    except (requests.exceptions.RequestException, ValueError, json.decoder.JSONDecodeError) as e:
         print(e)
     return
 
@@ -35,11 +36,11 @@ def raw_data(url):
 def _request_json(url):
     """return the json response of an url request on OpenData API"""
     try:
-        data = requests.get(url).json()
+        data = requests.get(url, timeout=5).json()
         if data.get("success", False):
             return data
-    except (requests.exceptions.RequestException, AttributeError) as e:
-        print(e)
+    except:
+        print("Problems with the request")
     return dict()
 
 
